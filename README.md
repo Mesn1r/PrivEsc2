@@ -1,32 +1,28 @@
-# PrivEsc2
+Privilege Escalation through Access Token Manipulation
 
-ok so this time i will talk about Privilage escaltion technique which called Access Token manipulation 
-so first of all , what is Access Token in Windows os and how it connect with the SE_DEBUG_NAME Privilege ?
+In this article, we will discuss a privilege escalation technique known as Access Token manipulation. Access Token manipulation is a technique used to escalate privileges by altering the Access Token associated with a process.
 
-Access Token is a data structure that describes the security context of a process or thread. It contains information about the user and security groups to which the user belongs, user privileges(!), and the user's security identifier (SID). access tokens enforce security restrictions and control access to resources .. On the other hand, SE_DEBUG_NAME is a privilege in Windows that allows the user to attach a debugger to any process running on the system. This privilege is used for debugging and development purposes and is granted to a user by adjusting their access token to include the SE_DEBUG_NAME privilege. When the SE_DEBUG_NAME privilege is enabled, the user can attach a debugger to any process running on the system as the access token is used by Windows to control access to resources and enforce security restrictions.
+Access Token manipulation is a technique used to escalate privileges by altering the Access Token associated with a process. In Windows operating systems, an Access Token is a data structure that describes the security context of a process or thread, including information about the user, their security groups, user privileges, and their security identifier (SID). Access Tokens enforce security restrictions and control access to resources. The SE_DEBUG_NAME privilege, when enabled, allows a process to debug other processes. If a process with a manipulated Access Token has the SE_DEBUG_NAME privilege enabled, it can use that privilege to gain complete control over other processes on the system, potentially leading to full system compromise. This is an example of privilege escalation through Access Token manipulation and the use of the SE_DEBUG_NAME function.
 
-so how we get our access token ?! lets understand the duplication system ..  
-duplication of access token in access control systems is a mechanishem to create a separate, impersonated access token that can be used to launch a new process with a different set of security attributes,This allows processes to be launched under different security contexts and helps enforce access restrictions and control access to resources.
+Now, how do we obtain an Access Token? Let's discuss the duplication system. Access token duplication in access control systems creates a separate, impersonated Access Token that can be used to launch a new process with different security attributes. This allows processes to run under different security contexts and helps enforce access restrictions and control access to resources.
 
-ok the poc time - 
-before we compailing the code we find the Process ID we want to take over in our case its winlogon.exe , why winlogon you ask ? good !
+The proof-of-concept time: Before compiling the code, we need to find the process ID we want to take over. In this case, it's winlogon.exe. Why winlogon.exe, you ask? Well, it is responsible for critical parts in logons and logoffs, privileges in general, and has the following characteristics:
 
-winlogon.exe responsible on critical parts in the logons and logoffs and privileges in general 
-Privileges - 
-* winlogon.exe runs with the SYSTEM account privileges, which is the highest privilege level in Windows.
-communication with the kernel - 
-* Winlogon.exe communicates with the Windows kernel to retrieve information about the system state, including the status of the logged-on user, and to initiate system shutdowns or restarts.
+* Winlogon.exe runs with the SYSTEM account privileges, which is the highest privilege level in Windows.
+* Winlogon.exe communicates with the Windows kernel to retrieve information about the system state, including the status of the logged-on user, and to 
+initiate system shutdowns or restarts.
 
+
+-------------------------------
 ![Screenshot 2023-01-30 at 11 59 38](https://user-images.githubusercontent.com/122444563/215446067-94c1a087-8367-46af-b1e0-6debc02ca594.png)
 
 ![Screenshot 2023-01-30 at 12 06 17](https://user-images.githubusercontent.com/122444563/215447454-13dd0247-9ffc-4957-ac35-8df3515daa8e.png)
 
-then let's compile the program 
-
-and run as shown below : 
-
+Now, let's compile the program. In the video, I demonstrate the privileges I have and whether they are enabled or disabled. I run a short program to prove that it is possible to escalate privileges to the NT-Authority level, thereby gaining more permissions.
 
 https://user-images.githubusercontent.com/122444563/215461901-5ec38d0d-e5f1-4b25-a9bf-764aa156179f.mp4
 
+what we can do to prevent ?
+If you aim to detect access token manipulations on endpoints, API monitoring is a good solution to consider. However, be cautious as the results can be overwhelming. In the context of EDR security, a lot of irrelevant or non-pertinent data may be generated by the API monitoring process, making it challenging to accurately identify actual manipulations.
 
 
